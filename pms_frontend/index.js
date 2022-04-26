@@ -1,11 +1,18 @@
 let allProductsArr={};
-function getAllProducts(){
+
+function getProducts(){
     fetch("http://localhost:8001/products")
     .then( ( products ) => products.json())
     .then( (allProduts) => {
+        allProductsArr = allProduts;
+        getAllProducts();
+    })
+}
+
+function getAllProducts(){
+
         let tbody=document.getElementById("tbody");
         tbody.innerHTML='';
-        allProductsArr=allProduts;
         allProductsArr.forEach((product,index)=>{
             let prRow=document.createElement("tr");
 
@@ -48,19 +55,16 @@ function getAllProducts(){
         }) // end allProducts forEach
 
 
-    } );
 }
-getAllProducts();
+getProducts();
 
 async function addProduct(){
     // event.preventDefault();
-    console.log(23456);
     let data={};
     data.id=document.getElementById("productID").value;
     data.name=document.getElementById("productName").value;
     data.price=document.getElementById("addPrice").value;
     data.quantity=document.getElementById("addQuantity").value;
-    console.log(data);
     console.log(document.getElementById("productID").value);
     let addData = await fetch("http://localhost:8001/products",{
         method:"POST",
@@ -123,7 +127,6 @@ function updateProduct(id,callBack){
         price:price,
         quantity:quantity
     });
-    console.log(data);
     fetch("http://localhost:8001/products?id="+id ,{
         method:"PUT",
         headers:{
@@ -134,7 +137,9 @@ function updateProduct(id,callBack){
     .then((data)=>data.json())
     .then((message)=>{
         let findId = allProductsArr.findIndex((ele,ind) => ele.id===id );
-        allProductsArr.splice(findId,1);
+        allProductsArr[findId].name=pname;
+        allProductsArr[findId].price=price;
+        allProductsArr[findId].quantity=quantity;
         callBack();
     });
 }
